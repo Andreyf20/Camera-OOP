@@ -11,8 +11,8 @@ import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
-    ImageView imageview;
-    Button takepicture;
+    public static ImageView imageview;
+    public static Button takepicture;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,8 +25,12 @@ public class MainActivity extends AppCompatActivity {
         takepicture.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view){
-                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivityForResult(intent, 0);
+                switch(view.getId()){
+                    default:
+                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        startActivityForResult(intent, 0);
+                        break;
+                }
             }
         });
     }
