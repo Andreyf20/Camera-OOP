@@ -15,6 +15,7 @@
         android:text="@string/takebtn"
         android:background="@android:color/holo_blue_dark"
         android:textColor="@android:color/white"
+        android:onClick="takepic"
         android:layout_marginStart="53dp"
         android:layout_marginEnd="53dp"
         app:layout_constraintBottom_toBottomOf="parent"

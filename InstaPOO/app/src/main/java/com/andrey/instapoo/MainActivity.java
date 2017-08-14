@@ -18,27 +18,22 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         imageview = (ImageView)findViewById(R.id.imageView);
         takepicture = (Button)findViewById(R.id.takepicture);
 
-        takepicture.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View view){
-                switch(view.getId()){
-                    default:
-                        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(intent, 0);
-                        break;
-                }
-            }
-        });
+    }
+
+    public void takepic(View view){
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 0);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Bitmap bitmap = (Bitmap)data.getExtras().get("data");
-        imageview.setImageBitmap(bitmap);
+        try {
+            super.onActivityResult(requestCode, resultCode, data);
+            Bitmap bitmap = (Bitmap) data.getExtras().get("data");
+            imageview.setImageBitmap(bitmap);
+        }catch(Exception e){}
     }
 }
