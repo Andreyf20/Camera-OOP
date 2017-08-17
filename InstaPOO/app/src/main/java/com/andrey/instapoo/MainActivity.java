@@ -15,6 +15,9 @@ import android.widget.ImageView;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final int CAMERA_REQUEST = 1;
+    private static final int STORAGE_REQUEST = 2;
+    private static boolean CAMERA_PERMISSION = false;
     public static ImageView imageview;
     public static Button takepicture;
 
@@ -25,37 +28,32 @@ public class MainActivity extends AppCompatActivity {
         imageview = (ImageView)findViewById(R.id.imageView);
         takepicture = (Button)findViewById(R.id.takepicture);
 
-        // This function requests permission for the camera
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.CAMERA)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.CAMERA)) {
+        // This function requests permission for the storage write TODO: move to another function so it works only and only if you want to save a picture
+        if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                // You can show an explanation here
             } else {
                 ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.CAMERA},
-                        1);
-            }
-        }
-
-        // This function requests permission for the storage write
-        if (ContextCompat.checkSelfPermission(MainActivity.this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE)
-                != PackageManager.PERMISSION_GRANTED) {
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
-                    Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            } else {
-                ActivityCompat.requestPermissions(MainActivity.this,
-                        new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
-                        1);
+                        new String[]{android.Manifest.permission.WRITE_EXTERNAL_STORAGE}, STORAGE_REQUEST);
             }
         }
 
     }
 
     public void takepic(View view){
+
+        // This function requests permission for the camera
+        if (ContextCompat.checkSelfPermission(MainActivity.this, android.Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this, android.Manifest.permission.CAMERA)) {
+                // You can show an explanation here
+            } else {
+                ActivityCompat.requestPermissions(MainActivity.this,
+                        new String[]{android.Manifest.permission.CAMERA}, CAMERA_REQUEST);
+            }
+        }
+        if(CAMERA_PERMISSION){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        startActivityForResult(intent, 0);
+        startActivityForResult(intent, 1);}
     }
 
     @Override
@@ -65,5 +63,22 @@ public class MainActivity extends AppCompatActivity {
             Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             imageview.setImageBitmap(bitmap);
         }catch(Exception e){}
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           String permissions[], int[] grantResults) {
+        switch (requestCode) {
+            case CAMERA_REQUEST: {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    CAMERA_PERMISSION = true;
+                } else {
+
+                }
+                return;
+            }
+            // other 'case' lines to check for other
+            // permissions this app might request
+        }
     }
 }
