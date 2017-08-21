@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (storagePermission != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
         }
         if (permissionCAMERA != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.CAMERA);
