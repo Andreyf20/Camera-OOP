@@ -33,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     public static ImageView imageview;
     public static Button takepicture;
     String mCurrentPhotoPath;
+    String TAG = "LOGS";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,9 +62,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d("FUCK", "me cago en dios sí está entrando en la puta función");
+        Log.d(TAG, "Está entrando en la función de onactivityresult");
         if(resultCode == RESULT_OK) {
-            //super.onActivityResult(requestCode, resultCode, data);
+            //super.onActivityResult(requestCode, resultCode, data); Por si acaso funciona despues
             //Bitmap bitmap = (Bitmap) data.getExtras().get("data");
             Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
             imageview.setImageBitmap(bitmap);
