@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     public static ImageView imageview;
     public static Button takepicture;
     String mCurrentPhotoPath;
-    String TAG = "LOGS";
+    String TAG = "LOGS"; // For debugging
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +46,33 @@ public class MainActivity extends AppCompatActivity {
         this.checkAndRequestPermissions();
     }
 
+    private boolean checkAndRequestPermissions() {
+        int permissionCAMERA = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.CAMERA);
+
+        int storagePermission = ContextCompat.checkSelfPermission(this,
+                Manifest.permission.WRITE_EXTERNAL_STORAGE);
+
+        List<String> listPermissionsNeeded = new ArrayList<>();
+
+        if (storagePermission != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
+        }
+        if (permissionCAMERA != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CAMERA);
+        }
+        if (!listPermissionsNeeded.isEmpty()) {
+            ActivityCompat.requestPermissions(this,
+                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), PERMISSIONS_REQUEST_CODE);
+            return false;
+        }
+        return true;
+    }
+
     public void takepic(View view){
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if(takePictureIntent.resolveActivity(getPackageManager()) != null){
-            // Aqui es donde lo habia puesto y medio funcionaban las dos cosas
             File photofile = null;
             try{
                 photofile = createImageFile();
@@ -65,10 +88,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void choosegallery(View view){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_PICK);
-        startActivityForResult(Intent.createChooser(intent, "Select Picture"), GALLERY_REQUEST_CODE);
+        Intent choosegalleryintent = new Intent();
+        choosegalleryintent.setType("image/*");
+        choosegalleryintent.setAction(Intent.ACTION_PICK);
+        startActivityForResult(Intent.createChooser(choosegalleryintent, "Select Picture"), GALLERY_REQUEST_CODE);
     }
 
     @Override
@@ -105,31 +128,6 @@ public class MainActivity extends AppCompatActivity {
         );
         mCurrentPhotoPath = image.getAbsolutePath();
         return image;
-    }
-
-
-    private boolean checkAndRequestPermissions() {
-        int permissionCAMERA = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.CAMERA);
-
-        int storagePermission = ContextCompat.checkSelfPermission(this,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE);
-
-        List<String> listPermissionsNeeded = new ArrayList<>();
-
-        if (storagePermission != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE);
-            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE);
-        }
-        if (permissionCAMERA != PackageManager.PERMISSION_GRANTED) {
-            listPermissionsNeeded.add(Manifest.permission.CAMERA);
-        }
-        if (!listPermissionsNeeded.isEmpty()) {
-            ActivityCompat.requestPermissions(this,
-                    listPermissionsNeeded.toArray(new String[listPermissionsNeeded.size()]), PERMISSIONS_REQUEST_CODE);
-            return false;
-        }
-        return true;
     }
 
     private void galleryAddPic() {
