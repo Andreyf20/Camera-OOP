@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Environment;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -32,17 +34,18 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
     private static final int GALLERY_REQUEST_CODE = 3;
-    public static ImageView imageview;
-    public static Button takepicture;
-    String mCurrentPhotoPath;
-    String TAG = "LOGS"; // For debugging
+    public ImageView imageview;
+    private String TAG = "LOGS"; // For debugging
+    private String mCameraFileName; // Path of the image saved from camera
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         imageview = (ImageView)findViewById(R.id.imageView);
-        takepicture = (Button)findViewById(R.id.takepicture);
+        File folder = new File(Environment.getExternalStorageDirectory() + "/InstaPOO/");
+        if(!folder.exists())
+            folder.mkdirs();
         this.checkAndRequestPermissions();
     }
 
@@ -71,20 +74,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void takepic(View view){
+        Log.d(TAG, "Está entrando en la función");
+
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if(takePictureIntent.resolveActivity(getPackageManager()) != null){
-            File photofile = null;
-            try{
-                photofile = createImageFile();
-                this.galleryAddPic();
-            }catch (IOException e){}
-            if(photofile != null){
-                Uri photoUri = FileProvider.getUriForFile(this, "com.andrey.instapoo.fileprovider", photofile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoUri);
-                this.galleryAddPic();
-                startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
-            }
-        }
+
+        String df = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        String newPicFile = "JPEG_"+ df + ".jpg";
+        String outPath = Environment.getExternalStorageDirectory() + "/InstaPOO/" + newPicFile;
+        File outFile = new File(outPath);
+
+        mCameraFileName = outFile.toString();
+        Uri outuri = Uri.fromFile(outFile);
+        Log.d(TAG, "Se creó el nuevo archivo");
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outuri);
+        Log.d(TAG, "Se va a iniciar la cámara");
+
+        startActivityForResult(takePictureIntent, CAMERA_REQUEST_CODE);
+
     }
 
     public void choosegallery(View view){
@@ -98,7 +105,19 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "Está entrando en la función de onactivityresult");
         if(resultCode == RESULT_OK && requestCode == CAMERA_REQUEST_CODE) {
-            Bitmap bitmap = BitmapFactory.decodeFile(mCurrentPhotoPath);
+            Uri uri = null;
+            if (data != null) {
+                uri = data.getData();
+            }
+            if (uri == null && mCameraFileName != null) {
+                uri = Uri.fromFile(new File(mCameraFileName));
+            }
+            File file = new File(mCameraFileName);
+            if (!file.exists()) {
+                file.mkdir();
+                this.galleryAddPic();
+            }
+            Bitmap bitmap = BitmapFactory.decodeFile(mCameraFileName);
             imageview.setImageBitmap(bitmap);
         }
         if(resultCode == RESULT_OK && requestCode == GALLERY_REQUEST_CODE){
@@ -117,25 +136,20 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private File createImageFile() throws IOException{
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",         /* suffix */
-                storageDir      /* directory */
-        );
-        mCurrentPhotoPath = image.getAbsolutePath();
-        return image;
-    }
-
     private void galleryAddPic() {
         Log.d(TAG, "Sí está entrando en la función para agregar la foto a la galería");
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCurrentPhotoPath);
+        File f = new File(mCameraFileName);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
-        this.sendBroadcast(mediaScanIntent);
+        sendBroadcast(mediaScanIntent);
+        MediaScannerConnection.scanFile(this,
+                new String[]{mCameraFileName}, null,
+                new MediaScannerConnection.OnScanCompletedListener() {
+                    public void onScanCompleted(String path, Uri uri) {
+                        Log.i("ExternalStorage", "Scanned " + path + ":");
+                        Log.i("ExternalStorage", "-> uri=" + uri);
+                    }
+                });
     }
 }
