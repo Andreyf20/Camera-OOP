@@ -37,6 +37,9 @@ public class MainActivity extends AppCompatActivity {
     public ImageView imageview;
     private String TAG = "LOGS"; // For debugging
     private String mCameraFileName; // Path of the image saved from camera
+    public static Bitmap bitmap;
+    Filter filter = new Filter();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +120,9 @@ public class MainActivity extends AppCompatActivity {
                 file.mkdir();
                 this.galleryAddPic();
             }
-            Bitmap bitmap = BitmapFactory.decodeFile(mCameraFileName);
+
+            bitmap = BitmapFactory.decodeFile(mCameraFileName);
+            filter.GetRGB(bitmap);
             imageview.setImageBitmap(bitmap);
         }
         if(resultCode == RESULT_OK && requestCode == GALLERY_REQUEST_CODE){
@@ -129,7 +134,7 @@ public class MainActivity extends AppCompatActivity {
 
             BitmapFactory.Options options = new BitmapFactory.Options();
             options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-            Bitmap bitmap = BitmapFactory.decodeFile(imagePath, options);
+            bitmap = BitmapFactory.decodeFile(imagePath, options);
 
             imageview.setImageBitmap(bitmap);
             cursor.close();

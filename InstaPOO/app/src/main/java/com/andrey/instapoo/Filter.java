@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.net.Uri;
 import android.nfc.Tag;
 import android.os.Environment;
@@ -32,4 +33,20 @@ import java.util.List;
  */
 
 public class Filter extends MainActivity {
+    public Bitmap GetRGB(Bitmap bitmap){
+        int x = 0;
+        int y = 0;
+        int color = bitmap.getPixel(x,y);
+        int red = Color.red(color);
+        int blue = Color.blue(color);
+        int green = Color.green(color);
+        int alpha = Color.alpha(color);
+        int GrayFilter = (red+blue+green)/3;
+        blue = GrayFilter;
+        red = GrayFilter;
+        green = GrayFilter;
+        return bitmap;
+
+
+    }
 }
