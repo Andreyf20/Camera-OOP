@@ -12,7 +12,7 @@
         android:id="@+id/svimage"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_marginTop="14dp"
+        android:layout_marginTop="8dp"
         android:background="@android:color/holo_blue_dark"
         android:text="Save image"
         android:textColor="@android:color/white"
@@ -21,13 +21,13 @@
         app:layout_constraintTop_toBottomOf="@+id/decomposition"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintHorizontal_bias="1.0" />
+        app:layout_constraintHorizontal_bias="0.0" />
 
     <Button
         android:id="@+id/myfilter"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="6dp"
         android:background="@android:color/holo_blue_dark"
         android:onClick="Invert"
         android:text="Mi filtro"
@@ -37,13 +37,13 @@
         app:layout_constraintTop_toBottomOf="@+id/desaturation"
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
-        app:layout_constraintHorizontal_bias="0.0" />
+        app:layout_constraintHorizontal_bias="1.0" />
 
     <Button
         android:id="@+id/filtrogausiano"
         android:layout_width="0dp"
         android:layout_height="64dp"
-        android:layout_marginTop="15dp"
+        android:layout_marginTop="9dp"
         android:background="@android:color/holo_blue_dark"
         android:text="Filtro Gausiano"
         android:textColor="@android:color/white"
@@ -60,7 +60,7 @@
         android:layout_height="64dp"
         android:layout_marginEnd="6dp"
         android:layout_marginStart="3dp"
-        android:layout_marginTop="352dp"
+        android:layout_marginTop="367dp"
         android:background="@android:color/holo_blue_dark"
         android:onClick="Averaging"
         android:text="Averaging"
@@ -79,7 +79,7 @@
         android:layout_height="67dp"
         android:layout_marginEnd="118dp"
         android:layout_marginStart="120dp"
-        android:layout_marginTop="352dp"
+        android:layout_marginTop="367dp"
         android:background="@android:color/holo_blue_dark"
         android:text="Desaturation"
         android:textColor="@android:color/white"
@@ -89,7 +89,7 @@
         tools:layout_constraintLeft_creator="1"
         tools:layout_constraintRight_creator="1"
         android:layout_marginLeft="8dp"
-        app:layout_constraintHorizontal_bias="0.504"
+        app:layout_constraintHorizontal_bias="0.536"
         android:layout_marginRight="8dp" />
 
     <Button
