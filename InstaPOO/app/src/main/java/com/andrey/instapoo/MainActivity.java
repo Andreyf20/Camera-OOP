@@ -1,6 +1,7 @@
 package com.andrey.instapoo;
 
 import android.Manifest;
+import android.content.ContentValues;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -39,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = "LOGS"; // For debugging
     private String mCameraFileName; // Path of the image saved from camera
     public static Bitmap bitmap;
+    String mCameraFilePath;
 
 
     @Override
@@ -88,6 +90,7 @@ public class MainActivity extends AppCompatActivity {
         File outFile = new File(outPath);
 
         mCameraFileName = outFile.toString();
+        mCameraFilePath = outPath;
         Uri outuri = Uri.fromFile(outFile);
         Log.d(TAG, "Se creó el nuevo archivo");
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outuri);
@@ -141,20 +144,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void galleryAddPic() {
-        Log.d(TAG, "Sí está entrando en la función para agregar la foto a la galería");
-        Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(mCameraFileName);
-        Uri contentUri = Uri.fromFile(f);
-        mediaScanIntent.setData(contentUri);
-        sendBroadcast(mediaScanIntent);
-        MediaScannerConnection.scanFile(this,
-                new String[]{mCameraFileName}, null,
-                new MediaScannerConnection.OnScanCompletedListener() {
-                    public void onScanCompleted(String path, Uri uri) {
-                        Log.i("ExternalStorage", "Scanned " + path + ":");
-                        Log.i("ExternalStorage", "-> uri=" + uri);
-                    }
-                });
+
     }
 
     public void changelayout(View view) {
