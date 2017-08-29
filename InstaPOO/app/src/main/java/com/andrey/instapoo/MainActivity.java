@@ -20,6 +20,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ListView;
 
 import java.io.File;
 import java.io.IOException;
@@ -38,7 +39,6 @@ public class MainActivity extends AppCompatActivity {
     private String TAG = "LOGS"; // For debugging
     private String mCameraFileName; // Path of the image saved from camera
     public static Bitmap bitmap;
-    Filter filter = new Filter();
 
 
     @Override
@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             bitmap = BitmapFactory.decodeFile(mCameraFileName);
-            filter.GetRGB(bitmap);
             imageview.setImageBitmap(bitmap);
         }
         if(resultCode == RESULT_OK && requestCode == GALLERY_REQUEST_CODE){
@@ -156,5 +155,10 @@ public class MainActivity extends AppCompatActivity {
                         Log.i("ExternalStorage", "-> uri=" + uri);
                     }
                 });
+    }
+
+    public void changelayout(View view) {
+        Intent intent = new Intent(this, Filter.class);
+        startActivity(intent);
     }
 }

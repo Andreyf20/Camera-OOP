@@ -1,6 +1,7 @@
 package com.andrey.instapoo;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -20,6 +21,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.io.File;
 import java.io.IOException;
@@ -33,20 +35,50 @@ import java.util.List;
  */
 
 public class Filter extends MainActivity {
-    public Bitmap GetRGB(Bitmap bitmap){
-        int x = 0;
-        int y = 0;
-        int color = bitmap.getPixel(x,y);
-        int red = Color.red(color);
-        int blue = Color.blue(color);
-        int green = Color.green(color);
-        int alpha = Color.alpha(color);
-        int GrayFilter = (red+blue+green)/3;
-        blue = GrayFilter;
-        red = GrayFilter;
-        green = GrayFilter;
-        return bitmap;
 
+    ImageView preview;
 
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.change_filter);
+        preview = (ImageView)findViewById(R.id.preview);
+    }
+
+    public void Averaging(View view){
+        Bitmap mutableBitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+
+        for (int i = 0; i < mutableBitmap.getWidth(); i++) {
+            for (int j = 0; j < mutableBitmap.getHeight(); j++) {
+                int pixel = mutableBitmap.getPixel(i, j);
+                int red = Color.red(pixel);
+                int green = Color.green(pixel);
+                int blue = Color.blue(pixel);
+                int color = Color.argb(0xFF, (red+blue+green)/3, (red+blue+green)/3, (red+blue+green)/3);
+                mutableBitmap.setPixel(i, j, color);
+            }
+        }
+        preview.setImageBitmap(mutableBitmap);
+    }
+
+    public void Invert(View view){
+        Bitmap finalimage = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), bitmap.getConfig());
+
+        int a,r,g,b;
+        int pixelColor;
+        int height = bitmap.getHeight();
+        int width = bitmap.getWidth();
+
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x< width; x++){
+                pixelColor = bitmap.getPixel(x,y);
+                a = Color.alpha(pixelColor);
+                b = 255 - Color.blue(pixelColor);
+                r = 255 - Color.red(pixelColor);
+                g = 255 - Color.green(pixelColor);
+                finalimage.setPixel(x,y,Color.argb(a,r,g,b));
+            }
+        }
+        preview.setImageBitmap(finalimage);
     }
 }
