@@ -39,6 +39,7 @@ public class Filter extends MainActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.change_filter);
         preview = (ImageView)findViewById(R.id.preview);
+        preview.setImageBitmap(bitmap);
     }
 
     public Bitmap getCopy(){
@@ -100,12 +101,56 @@ public class Filter extends MainActivity {
 
         for (int y = 0; y < height; y++){
             for (int x = 0; x< width; x++){
-                pixelColor = bitmap.getPixel(x,y);
+                pixelColor = bitmapcopy.getPixel(x,y);
                 a = Color.alpha(pixelColor);
                 b = Color.blue(pixelColor);
                 r = Color.red(pixelColor);
                 g = Color.green(pixelColor);
-                D = (min(min(r,g),b)+max(max(r,g),b)) / 2;
+                D = (max(max(b, r), g) + min(min(b, r), g)) / 2;
+                bitmapcopy.setPixel(x,y,Color.argb(a,D,D,D));
+            }
+        }
+        preview.setImageBitmap(bitmapcopy);
+    }
+
+    public void decompostitionmax(View view) {
+        bitmapcopy = getCopy();
+
+        int a, r, g, b, D;
+        int pixelColor;
+        int height = bitmapcopy.getHeight();
+        int width = bitmapcopy.getWidth();
+
+        for (int y = 0; y < height; y++) {
+            for (int x = 0; x < width; x++) {
+                pixelColor = bitmapcopy.getPixel(x, y);
+                a = Color.alpha(pixelColor);
+                b = Color.blue(pixelColor);
+                r = Color.red(pixelColor);
+                g = Color.green(pixelColor);
+                D = max(max(r, g), b);
+                bitmapcopy.setPixel(x, y, Color.argb(a, D, D, D));
+            }
+        }
+        preview.setImageBitmap(bitmapcopy);
+    }
+
+    public void decompositionmin (View view) {
+        bitmapcopy = getCopy();
+
+        int a,r,g,b,D;
+        int pixelColor;
+        int height = bitmapcopy.getHeight();
+        int width = bitmapcopy.getWidth();
+
+        for (int y = 0; y < height; y++){
+            for (int x = 0; x< width; x++){
+                pixelColor = bitmapcopy.getPixel(x,y);
+                a = Color.alpha(pixelColor);
+                b = Color.blue(pixelColor);
+                r = Color.red(pixelColor);
+                g = Color.green(pixelColor);
+                D = min(min(r, g), b);
                 bitmapcopy.setPixel(x,y,Color.argb(a,D,D,D));
             }
         }
@@ -124,7 +169,7 @@ public class Filter extends MainActivity {
         if (file.exists ()) file.delete ();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
             super.galleryAddPic();
