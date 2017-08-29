@@ -2,14 +2,27 @@ package com.andrey.instapoo;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by andrey on 24/08/17.
@@ -19,6 +32,7 @@ public class Filter extends MainActivity {
 
     protected ImageView preview;
     protected Bitmap bitmapcopy;
+    String mCameraFileName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,11 +105,56 @@ public class Filter extends MainActivity {
                 b = Color.blue(pixelColor);
                 r = Color.red(pixelColor);
                 g = Color.green(pixelColor);
-                D = min(min(r,g),b)+max(max(r,g),b);
+                D = (min(min(r,g),b)+max(max(r,g),b)) / 2;
                 bitmapcopy.setPixel(x,y,Color.argb(a,D,D,D));
-
             }
         }
         preview.setImageBitmap(bitmapcopy);
+    }
+
+    public void saveIMG(View view) {
+        String df = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        String fname = "JPEG_"+ df + ".jpg";
+
+        File myDir = new File(Environment.getExternalStorageDirectory() + "/InstaPOO/");
+        myDir.mkdirs();
+
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            FileOutputStream out = new FileOutputStream(file);
+            bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 90, out);
+            out.flush();
+            out.close();
+            super.galleryAddPic();
+            saveIMGdiagBox();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void saveIMGdiagBox(){
+        AlertDialog.Builder builder;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder = new AlertDialog.Builder(this, android.R.style.Theme_Material_Dialog_Alert);
+        } else {
+            builder = new AlertDialog.Builder(this);
+        }
+        builder.setTitle("Image Saved!")
+                .setMessage("The image has been saved")
+                .setPositiveButton(android.R.string.ok , new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Does something if yes
+                    }
+                })
+                /*.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        // do nothing
+                    }
+                })*/
+                .setIcon(android.R.drawable.ic_dialog_info)
+                .show();
     }
 }

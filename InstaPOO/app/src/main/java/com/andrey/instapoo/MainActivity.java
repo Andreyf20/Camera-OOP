@@ -39,8 +39,8 @@ public class MainActivity extends AppCompatActivity {
     public ImageView imageview;
     private String TAG = "LOGS"; // For debugging
     private String mCameraFileName; // Path of the image saved from camera
+    private String mCameraFilePath;
     public static Bitmap bitmap;
-    String mCameraFilePath;
 
 
     @Override
@@ -143,8 +143,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void galleryAddPic() {
-
+    protected void galleryAddPic() {
     }
 
     public void changelayout(View view) {
