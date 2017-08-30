@@ -6,16 +6,12 @@ import static java.lang.Math.min;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.RectF;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -155,6 +151,22 @@ public class Filter extends MainActivity {
             }
         }
         preview.setImageBitmap(bitmapcopy);
+    }
+
+    public void filtrogaus(View view){
+]
+        Mat mat = inputFrame.gray();
+        org.opencv.core.Size s = new Size(3,3);
+        Imgproc.GaussianBlur(mat, mat, s, 2);
+        return mat;
+        }
+        Matrix m = new Matrix();
+        float reqWidth = bitmapcopy.getWidth();
+        float reqHeight = bitmapcopy.getHeight();
+        m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, reqWidth, reqHeight), Matrix.ScaleToFit.CENTER);
+        bitmapcopy = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
+
+
     }
 
     public void saveIMG(View view) {
