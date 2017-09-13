@@ -36,11 +36,10 @@ public class MainActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_CODE = 1;
     private static final int CAMERA_REQUEST_CODE = 2;
     private static final int GALLERY_REQUEST_CODE = 3;
-    public ImageView imageview;
+    private ImageView imageview;
     private String TAG = "LOGS"; // For debugging
     private String mCameraFileName; // Path of the image saved from camera
-    private String mCameraFilePath;
-    public static Bitmap bitmap;
+    protected static Bitmap bitmap;
 
 
     @Override
@@ -90,7 +89,6 @@ public class MainActivity extends AppCompatActivity {
         File outFile = new File(outPath);
 
         mCameraFileName = outFile.toString();
-        mCameraFilePath = outPath;
         Uri outuri = Uri.fromFile(outFile);
         Log.d(TAG, "Se creó el nuevo archivo");
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, outuri);
@@ -121,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
             File file = new File(mCameraFileName);
             if (!file.exists()) {
                 file.mkdir();
-                this.galleryAddPic();
+                this.galleryAddPic(mCameraFileName);
             }
 
             bitmap = BitmapFactory.decodeFile(mCameraFileName);
@@ -143,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    protected void galleryAddPic() {
+    protected void galleryAddPic(String path) {
     }
 
     public void changelayout(View view) {

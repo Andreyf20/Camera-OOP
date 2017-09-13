@@ -1,5 +1,6 @@
 package com.andrey.instapoo;
 
+import static android.R.attr.src;
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -17,8 +18,12 @@ import android.widget.ImageView;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by andrey on 24/08/17.
@@ -28,7 +33,7 @@ public class Filter extends MainActivity {
 
     protected ImageView preview;
     protected Bitmap bitmapcopy;
-    String mCameraFileName;
+    private ConvolutionMatrix convMatrix = new ConvolutionMatrix(3);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +68,10 @@ public class Filter extends MainActivity {
                 bitmapcopy.setPixel(i, j, color);
             }
         }
-        preview.setImageBitmap(bitmapcopy);
+        setBitmapView(bitmapcopy);
     }
 
-    public void invert(View view){
+    public void invert(View view){ // Invert filter
         bitmapcopy = getCopy();
 
         int a,r,g,b;
@@ -84,7 +89,7 @@ public class Filter extends MainActivity {
                 bitmapcopy.setPixel(x,y,Color.argb(a,r,g,b));
             }
         }
-        preview.setImageBitmap(bitmapcopy);
+        setBitmapView(bitmapcopy);
     }
 
     public void desaturation(View view){
@@ -106,7 +111,7 @@ public class Filter extends MainActivity {
                 bitmapcopy.setPixel(x,y,Color.argb(a,D,D,D));
             }
         }
-        preview.setImageBitmap(bitmapcopy);
+        setBitmapView(bitmapcopy);
     }
 
     public void decompostitionmax(View view) {
@@ -128,7 +133,7 @@ public class Filter extends MainActivity {
                 bitmapcopy.setPixel(x, y, Color.argb(a, D, D, D));
             }
         }
-        preview.setImageBitmap(bitmapcopy);
+        setBitmapView(bitmapcopy);
     }
 
     public void decompositionmin (View view) {
@@ -150,29 +155,84 @@ public class Filter extends MainActivity {
                 bitmapcopy.setPixel(x,y,Color.argb(a,D,D,D));
             }
         }
-        preview.setImageBitmap(bitmapcopy);
+        setBitmapView(bitmapcopy);
     }
 
     public void filtrogaus(View view){
-]
-        Mat mat = inputFrame.gray();
-        org.opencv.core.Size s = new Size(3,3);
-        Imgproc.GaussianBlur(mat, mat, s, 2);
-        return mat;
-        }
-        Matrix m = new Matrix();
-        float reqWidth = bitmapcopy.getWidth();
-        float reqHeight = bitmapcopy.getHeight();
-        m.setRectToRect(new RectF(0, 0, bitmap.getWidth(), bitmap.getHeight()), new RectF(0, 0, reqWidth, reqHeight), Matrix.ScaleToFit.CENTER);
-        bitmapcopy = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), m, true);
 
+        bitmapcopy = getCopy();
 
+        double[][] GaussianBlur = new double[][] {
+                { 1, 2, 1 },
+                { 2, 4, 2 },
+                { 1, 2, 1 }
+        };
+        convMatrix.applyConfig(GaussianBlur);
+        convMatrix.Factor = 16;
+        convMatrix.Offset = 0;
+        bitmapcopy = ConvolutionMatrix.computeConvolution3x3(bitmapcopy, convMatrix);
+
+        setBitmapView(bitmapcopy);
     }
 
-    public void saveIMG(View view) {
+    public void ASCIIfilter(View view){
+
+        String chars = null;
+        StringBuilder sb = new StringBuilder();
+
+        for (int i = 0; i < bitmap.getWidth(); i++) {
+            for (int j = 0; j < bitmap.getHeight(); j++) {
+                int pixel = bitmap.getPixel(i, j);
+                int red = Color.red(pixel);
+                int green = Color.green(pixel);
+                int blue = Color.blue(pixel);
+                int value = (red+blue+green)/3;
+                char character = (char) value;
+                sb.append(character);
+            }
+        }
+        chars = sb.toString();
+        saveTXT(chars);
+    }
+
+    private void saveTXT(String string){
+        String fname = getFileNameTXT();
+
+        File myDir = new File(Environment.getExternalStorageDirectory() + "/InstaPOO/");
+        myDir.mkdirs();
+
+        File file = new File (myDir, fname);
+        if (file.exists ()) file.delete ();
+        try {
+            file.createNewFile();
+            FileOutputStream fOut = new FileOutputStream(file);
+            OutputStreamWriter myOutWriter = new OutputStreamWriter(fOut);
+            myOutWriter.append(string);
+            myOutWriter.close();
+            fOut.close();
+            saveIMGdiagBox();
+        } catch (Exception e) {}
+    }
+
+    private String getFileNameJPG(){
         String df = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
         String fname = "JPEG_"+ df + ".jpg";
+
+        return fname;
+    }
+
+    private String getFileNameTXT(){
+        String df = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+
+        String fname = df + ".txt";
+
+        return fname;
+    }
+
+    public void saveIMG(View view) {
+
+        String fname = getFileNameJPG();
 
         File myDir = new File(Environment.getExternalStorageDirectory() + "/InstaPOO/");
         myDir.mkdirs();
@@ -184,7 +244,6 @@ public class Filter extends MainActivity {
             bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
             out.flush();
             out.close();
-            super.galleryAddPic();
             saveIMGdiagBox();
 
         } catch (Exception e) {
@@ -213,5 +272,27 @@ public class Filter extends MainActivity {
                 })*/
                 .setIcon(android.R.drawable.ic_dialog_info)
                 .show();
+    }
+
+    protected void setBitmapView(Bitmap bitmap){
+        preview.setImageBitmap(bitmap);
+    }
+
+    public void myfilter(View view){
+
+        bitmapcopy = getCopy();
+
+        double[][] OurConvolution = new double[][] {
+                { 1, 1, 1 },
+                { 1, 1, 1 },
+                { 1, 1, 1 }
+        };
+        convMatrix.applyConfig(OurConvolution);
+        convMatrix.Factor = 16;
+        convMatrix.Offset = 0;
+        bitmapcopy = ConvolutionMatrix.computeConvolution3x3(bitmapcopy, convMatrix);
+
+        setBitmapView(bitmapcopy);
+
     }
 }
