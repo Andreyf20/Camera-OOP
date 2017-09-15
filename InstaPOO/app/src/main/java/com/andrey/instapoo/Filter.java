@@ -43,7 +43,7 @@ public class Filter extends MainActivity {
         preview.setImageBitmap(bitmap);
     }
 
-    public Bitmap getCopy(){
+    protected Bitmap getCopy(){
         bitmapcopy = bitmap.copy(Bitmap.Config.ARGB_8888, true);
         if(bitmap.getHeight() > 720 || bitmap.getWidth() > 1290){
             Matrix m = new Matrix();
@@ -217,7 +217,7 @@ public class Filter extends MainActivity {
     private String getFileNameJPG(){
         String df = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 
-        String fname = "JPEG_"+ df + ".jpg";
+        String fname = "PNG"+ df + ".jpg";
 
         return fname;
     }
@@ -241,9 +241,11 @@ public class Filter extends MainActivity {
         if (file.exists ()) file.delete ();
         try {
             FileOutputStream out = new FileOutputStream(file);
-            bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            //bitmapcopy.compress(Bitmap.CompressFormat.JPEG, 100, out);
+            bitmapcopy.compress(Bitmap.CompressFormat.PNG, 100, out);
             out.flush();
             out.close();
+            galleryAddPic(myDir.getAbsolutePath());
             saveIMGdiagBox();
 
         } catch (Exception e) {
